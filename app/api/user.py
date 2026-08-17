@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
+from app.core.dependencies import require_role
 from app.database.session import get_db
 from app.models.role import Role
 from app.models.user import User
@@ -149,7 +150,8 @@ def update_user(
 @router.delete("/users/{user_id}")
 def delete_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("ADMIN"))
 ):
     user = db.get(User, user_id)
 
